@@ -1,0 +1,70 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}主页{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">第三方测试服务平台</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">主页</a></li>
+                    <li><a href="contract">测试合同备案</a></li>
+                    <li><a href="proof">提交测试证明</a></li>
+                    <li><a href="advice">测试投诉建议</a></li>
+                </ul>
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="jumbotron">
+        <br/>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h1>欢迎使用</h1>
+                    <p>第三方测试服务平台是支撑交通运输行业信息系统软件第三方测试活动管理的电子政务平台，配合《交通运输行业信息系统软件第三方测试管理办法》和《交通运输行业信息系统软件测试要求》使用，综合保障交通运输行业信息系统软件质量。</p>
+                    <p>若无账户，请先&raquo;<a class="btn btn-primary btn-md" href="signup" role="button">注册</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h2>已注册账户登录</h2>
+                    <form class="form-signin" method="post">
+                        <label for="inputEmail">账户名称</label>
+                        <input type="email" name="inputEmail" class="form-control" placeholder="请输入邮箱地址" required autofocus>
+                        <br/>
+                        <label for="inputPassword">账户密码</label>
+                        <input type="password" name="inputPassword" class="form-control" placeholder="请输入密码" required>
+                        <br/>
+                        <button class="btn btn-md btn-primary btn-block" type="submit">登录</button>
+                    </form>
+                </div>
+            </div>
+         </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h3>测试合同备案</h3>
+                <p>定级测试，避免因信息系统软件失效引发的风险和责任</p>
+            </div>
+            <div class="col-md-4">
+                <h3>测试证明提交</h3>
+                <p>公正测试，保障参与行业第三方测试机构的权利和信用</p>
+            </div>
+            <div class="col-md-4">
+                <h3>投诉与建议</h3>
+                <p>监督测试，建立交通运输行业第三方测试健康市场秩序</p>
+            </div>
+        </div>
+    </div>
+
+    <br/>
+    <footer style="text-align:center;margin:auto">
+        <p>&copy; Copyright 2015</p>
+    </footer>
+{% endblock %}
