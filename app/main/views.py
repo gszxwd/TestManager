@@ -1,7 +1,8 @@
 __author__ = 'Xu Zhao'
 
 from datetime import datetime
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, session, redirect, url_for, flash
+from flask.ext.login import login_user
 from ..models import Principal
 from .. import db
 from . import main
@@ -10,9 +11,12 @@ from . import main
 def login():
     if request.method == "POST":
         prcp = Principal.query.filter_by(Email=request.form["inputEmail"]).first()
-        if prcp.Email == request.form["inputEmail"] and prcp.Password == request.form["inputPassword"]:
+        if prcp is not None and prcp.Email == request.form["inputEmail"] and prcp.Password == request.form["inputPassword"]:
+            session['name'] = prcp.Email
+            login_user(prcp)
             return redirect(url_for('.login'))
         else:
+            flash('Invalid User/Password')
             return redirect(url_for('.signup'))
     else:
         return render_template('index.html')
