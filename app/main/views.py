@@ -2,7 +2,7 @@ __author__ = 'Xu Zhao'
 
 from datetime import datetime
 from flask import render_template, request, session, redirect, url_for, flash
-from flask.ext.login import login_user
+from flask.ext.login import login_user, logout_user, login_required
 from ..models import Principal
 from .. import db
 from . import main
@@ -19,7 +19,13 @@ def login():
             flash('Invalid User/Password')
             return redirect(url_for('.signup'))
     else:
-        return render_template('index.html')
+        return render_template('index.html', name=session.get('name'))
+
+@main.route('/logout')
+def logout():
+    logout_user()
+    flash('You have been logged out.')
+    return redirect(url_for('.login'))
 
 @main.route('/contract')
 def contract():
