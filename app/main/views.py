@@ -44,15 +44,27 @@ def signup():
     if request.method == "POST":
         new_pcl = Principal(Email=request.form['email'],
                         Password=request.form['password'],
-                        Name='ABC',
-                        Role='1',
-                        Address='DEF',
-                        Contacts='ZX',
-                        Telephone='123',
+                        Name=request.form['name'],
+                        Role=request.form['role'],
+                        Address=request.form['address'],
+                        Contacts=request.form['contacts'],
+                        Telephone=request.form['telephone'],
                         RegTime=datetime.now())
         db.create_all()
         db.session.add(new_pcl)
         db.session.commit()
-        return redirect(url_for(".login"))
+        session['name'] = new_pcl.Email
+        login_user(new_pcl)
+        if new_pcl.Role != '4':
+            return redirect(url_for(".login"))
+        else:
+            return redirect(url_for(".signup2"))
     else:
         return render_template('signup.html')
+
+@main.route('/signup2', methods=['GET', 'POST'])
+def signup2():
+    if request.method == "POST":
+        pass
+    else:
+        return render_template('signup2.html', name=session.get('name'))

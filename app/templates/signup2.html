@@ -1,0 +1,36 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}测试方备案{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">第三方测试服务平台</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">主页</a></li>
+                </ul>
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <br/><br/><br/><br/>
+    <h2 class="text-center">测试方备案</h2>
+    <form class="form-horizontal" method="post">
+        <div class="form-group">
+            <label for="email" class="col-sm-4 control-label">邮箱</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ name }}</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-4">
+                <button type="submit" class="btn btn-md btn-primary btn-block">备案</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

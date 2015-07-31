@@ -8,7 +8,7 @@ class Principal(UserMixin, db.Model):
     __tablename__ = "principal"
     # id is used for flask.login
     id = db.Column(db.Integer, primary_key=True)
-    Email = db.Column(db.String(32), nullable=False)
+    Email = db.Column(db.String(32), unique=True, nullable=False)
     Password = db.Column(db.String(32), nullable=False)
     Name = db.Column(db.Unicode(64), nullable=False)
     Role = db.Column(db.String(1), nullable=False)
