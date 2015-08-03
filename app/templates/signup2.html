@@ -28,6 +28,33 @@
             </div>
         </div>
         <div class="form-group">
+            <label for="cert" class="col-sm-4 control-label">资质类型</label>
+            <div class="col-sm-4 controls">
+                <label class="checkbox-inline">
+                    <input value="CMA" type="checkbox">CMA资质
+                </label>
+                <label class="checkbox-inline">
+                    <input value="CNAS" type="checkbox">CMA资质
+                </label>
+                <label class="checkbox-inline">
+                    <input value="Cert" type="checkbox">其它等效资质
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="cmatime" class="col-sm-4 control-label">CMA资质起止</label>
+            <div class="col-sm-4">
+                <input name="cmastart" type="date">
+                <input name="cmaend" type="date">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="cmafile" class="col-sm-4 control-label">CMA认证材料</label>
+            <div class="col-sm-4">
+                <input class="input-file" id="fileinput" type="file">
+            </div>
+        </div>
+        <div class="form-group">
             <div class="col-sm-offset-4 col-sm-4">
                 <button type="submit" class="btn btn-md btn-primary btn-block">备案</button>
             </div>

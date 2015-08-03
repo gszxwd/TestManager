@@ -3,7 +3,7 @@ __author__ = 'Xu Zhao'
 from datetime import datetime
 from flask import render_template, request, session, redirect, url_for, flash
 from flask.ext.login import login_user, logout_user, login_required
-from ..models import Principal
+from ..models import Principal, Tester
 from .. import db
 from . import main
 
@@ -42,22 +42,38 @@ def advice():
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == "POST":
-        new_pcl = Principal(Email=request.form['email'],
-                        Password=request.form['password'],
-                        Name=request.form['name'],
-                        Role=request.form['role'],
-                        Address=request.form['address'],
-                        Contacts=request.form['contacts'],
-                        Telephone=request.form['telephone'],
-                        RegTime=datetime.now())
-        db.create_all()
-        db.session.add(new_pcl)
-        db.session.commit()
-        session['name'] = new_pcl.Email
-        login_user(new_pcl)
-        if new_pcl.Role != '4':
+        if request.form['role'] != '4':
+            new_pcl = Principal(Email=request.form['email'],
+                                Password=request.form['password'],
+                                Name=request.form['name'],
+                                Role=request.form['role'],
+                                Address=request.form['address'],
+                                Contacts=request.form['contacts'],
+                                Telephone=request.form['telephone'],
+                                RegTime=datetime.now())
+            db.create_all()
+            db.session.add(new_pcl)
+            db.session.commit()
+            session['name'] = new_pcl.Email
+            login_user(new_pcl)
             return redirect(url_for(".login"))
         else:
+            tester = Tester(Email=request.form['email'],
+                            Password=request.form['password'],
+                            Name=request.form['name'],
+                            Role=request.form['role'],
+                            Address=request.form['address'],
+                            Contacts=request.form['contacts'],
+                            Telephone=request.form['telephone'],
+                            HasCMA=False,
+                            HasCNAS=False,
+                            HasCert=False,
+                            IsChecked=False,
+                            RegTime=datetime.now())
+            db.create_all()
+            db.session.add(tester)
+            db.session.commit()
+            session['name'] = tester.Email
             return redirect(url_for(".signup2"))
     else:
         return render_template('signup.html')
@@ -65,6 +81,10 @@ def signup():
 @main.route('/signup2', methods=['GET', 'POST'])
 def signup2():
     if request.method == "POST":
-        pass
+        tester = Tester.query.filter_by(Email=session.get('name')).first()
+        tester.HasCMA = True
+        db.session.commit()
+        login_user(tester)
+        return redirect(url_for(".login"))
     else:
         return render_template('signup2.html', name=session.get('name'))
