@@ -20,7 +20,7 @@
 {% block content %}
     <br/><br/><br/><br/>
     <h2 class="text-center">测试方备案</h2>
-    <form class="form-horizontal" method="post">
+    <form class="form-horizontal" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="email" class="col-sm-4 control-label">邮箱</label>
             <div class="col-sm-4">
@@ -31,27 +31,41 @@
             <label for="cert" class="col-sm-4 control-label">资质类型</label>
             <div class="col-sm-4 controls">
                 <label class="checkbox-inline">
-                    <input value="CMA" type="checkbox">CMA资质
+                    <input name="certtype" value="hascma" type="checkbox">CMA资质
                 </label>
                 <label class="checkbox-inline">
-                    <input value="CNAS" type="checkbox">CMA资质
+                    <input name="certtype" value="hascnas" type="checkbox">CNAS资质
                 </label>
                 <label class="checkbox-inline">
-                    <input value="Cert" type="checkbox">其它等效资质
+                    <input name="certtype" value="hascert" type="checkbox">其它等效资质
                 </label>
             </div>
         </div>
         <div class="form-group">
             <label for="cmatime" class="col-sm-4 control-label">CMA资质起止</label>
             <div class="col-sm-4">
-                <input name="cmastart" type="date">
-                <input name="cmaend" type="date">
+                <input name="cmastart" type="text" placeholder="起始日期:年-月-日">&nbsp;
+                <input name="cmaend" type="text" placeholder="终止日期:年-月-日">
             </div>
         </div>
         <div class="form-group">
             <label for="cmafile" class="col-sm-4 control-label">CMA认证材料</label>
             <div class="col-sm-4">
-                <input class="input-file" id="fileinput" type="file">
+                <input class="input-file" name="cmafile" type="file">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="testrange" class="col-sm-4 control-label">资质范围</label>
+            <div class="col-sm-4 controls">
+                <label class="checkbox-inline">
+                    <input name="testrange" value="功能" type="checkbox">功能
+                </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="性能" type="checkbox">性能
+                </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="可靠性" type="checkbox">可靠性
+                </label>
             </div>
         </div>
         <div class="form-group">

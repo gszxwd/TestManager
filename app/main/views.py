@@ -1,6 +1,7 @@
 __author__ = 'Xu Zhao'
 
 from datetime import datetime
+import os
 from flask import render_template, request, session, redirect, url_for, flash
 from flask.ext.login import login_user, logout_user, login_required
 from ..models import Principal, Tester
@@ -78,11 +79,35 @@ def signup():
     else:
         return render_template('signup.html')
 
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg'])
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
+
 @main.route('/signup2', methods=['GET', 'POST'])
 def signup2():
     if request.method == "POST":
         tester = Tester.query.filter_by(Email=session.get('name')).first()
-        tester.HasCMA = True
+        types = request.form.getlist('certtype')
+        for ty in types:
+            if ty == u"hascma":
+                tester.HasCMA = True
+            if ty == u"hascnas":
+                tester.HasCNAS = True
+            if ty == u"hascert":
+                tester.HasCert = True
+        temps = request.form['cmastart'].split('-')
+        tester.CMAStart = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+        temps = request.form['cmaend'].split('-')
+        tester.CMAEnd = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+
+        cmafile = request.files['cmafile']
+        if cmafile and allowed_file(cmafile.filename):
+            # TODO: absolute path & create directory
+            tester.CMAPath = os.path.join("D://uploads//", cmafile.filename)
+            cmafile.save(tester.CMAPath)
+
+        testrange = request.form.getlist('testrange')
+        tester.TestRange = ','.join(testrange)
         db.session.commit()
         login_user(tester)
         return redirect(url_for(".login"))
