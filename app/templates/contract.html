@@ -4,22 +4,182 @@
 
 {% block navbar %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="/">第三方测试服务平台</a>
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">第三方测试服务平台</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">主页</a></li>
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="contract">测试合同备案</a></li>
+                        <li><a href="proof">提交测试证明</a></li>
+                        <li><a href="advice">测试投诉建议</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="logout">{{ name }}，登出</a></li>
+                    {% else %}
+                        <li><a href="/">请登入</a></li>
+                    {% endif %}
+                </ul>
+            </div><!--/.navbar-collapse -->
         </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="/">主页</a></li>
-                <li><a href="contract">测试合同备案</a></li>
-                <li><a href="proof">提交测试证明</a></li>
-                <li><a href="advice">测试投诉建议</a></li>
-            </ul>
-        </div><!--/.navbar-collapse -->
-      </div>
     </nav>
 {% endblock %}
 
 {% block content %}
-    <p>Contract Record</p>
+    <br/><br/><br/><br/>
+    <h2 class="text-center">测试合同备案</h2>
+    <form class="form-horizontal" method="post">
+        <div class="form-group">
+            <label for="name" class="col-sm-4 control-label">系统名称</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="name" placeholder="请输入被测系统名称" required autofocus>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="tname" class="col-sm-4 control-label">测试机构</label>
+            <div class="col-sm-4">
+                <select class="form-control" name="tname">
+                    {%  for tester in testers %}
+                        <option>{{ tester }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="category" class="col-sm-4 control-label">系统类别</label>
+            <div class="col-sm-4">
+                <label class="checkbox-inline">
+                    <input type="radio" name="category" value="1">交通工具类</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="category" value="2">交通基础设施类</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="category" value="3">基础通信类</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="category" value="4" checked>组织管理类</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="category" value="5" >综合系统类</input>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="function" class="col-sm-4 control-label">系统功能</label>
+            <div class="col-sm-4">
+                <textarea class="form-control" name="function">被测系统主要功能为</textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="version" class="col-sm-4 control-label">系统版本</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="version" placeholder="请输入被测系统版本号" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="budgetary" class="col-sm-4 control-label">测试预算</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="budgetary" placeholder="请输入测试预算费用" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="onlinetime" class="col-sm-4 control-label">上线时间</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="onlinetime" placeholder="请输入计划上线日期：年-月-日" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="isupdated" class="col-sm-4 control-label">是否升级</label>
+            <div class="col-sm-4 controls">
+                <input type="checkbox" value="y" name="isupdated">系统升级测试</input>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="rangerate" class="col-sm-4 control-label">交通服务范围影响</label>
+            <div class="col-sm-4">
+                <label class="checkbox-inline">
+                    <input type="radio" name="rangerate" value="1">低</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="rangerate" value="2" checked>一般</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="rangerate" value="3">较高</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="rangerate" value="4">高</input>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="capacityrate" class="col-sm-4 control-label">交通服务效能影响</label>
+            <div class="col-sm-4">
+                <label class="checkbox-inline">
+                    <input type="radio" name="capacityrate" value="1">低</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="capacityrate" value="2" checked>一般</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="capacityrate" value="3">较高</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="capacityrate" value="4">高</input>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="safetyrate" class="col-sm-4 control-label">交通安全畅通影响</label>
+            <div class="col-sm-4">
+                <label class="checkbox-inline">
+                    <input type="radio" name="safetyrate" value="1">低</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="safetyrate" value="2" checked>一般</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="safetyrate" value="3">较高</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="safetyrate" value="4">高</input>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="additionreq" class="col-sm-4 control-label">附加测试项</label>
+            <div class="col-sm-4 controls">
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="标准符合测试" type="checkbox">标准符合测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="安全测试" type="checkbox">安全测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="人机界面测试" type="checkbox">人机界面测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="安装测试" type="checkbox">安装测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="余量测试" type="checkbox">余量测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="兼容测试" type="checkbox">兼容测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="恢复测试" type="checkbox">恢复测试
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-4">
+                <button type="submit" class="btn btn-md btn-primary btn-block">备案</button>
+            </div>
+        </div>
+    </form>
 {% endblock %}

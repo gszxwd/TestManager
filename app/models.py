@@ -18,7 +18,7 @@ class Principal(UserMixin, db.Model):
     RegTime = db.Column(db.DateTime, nullable=False)
 
     def __repr__(self):
-        return '%r' % self.Email
+        return '%r' % self.Name
 
 class Tester(UserMixin, db.Model):
     __tablename__ = "tester"
@@ -52,6 +52,25 @@ class Tester(UserMixin, db.Model):
     CheckName = db.Column(db.Unicode(64))
     CheckTime = db.Column(db.DateTime)
 
+class TestContract(db.Model):
+    __tablename__ = "testcontract"
+    ContractID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(64), nullable=False)
+    Category = db.Column(db.String(1), nullable=False)
+    Function = db.Column(db.String(128), nullable=False)
+    Version = db.Column(db.String(16), nullable=False)
+    OnlineTime = db.Column(db.DateTime, nullable=False)
+    IsUpdated = db.Column(db.Boolean, nullable=False)
+    Budgetary = db.Column(db.Float, nullable=False)
+    RangeRate = db.Column(db.String(1), nullable=False)
+    CapacityRate = db.Column(db.String(1), nullable=False)
+    SafetyRate = db.Column(db.String(1), nullable=False)
+    TestRank = db.Column(db.String(1), nullable=False)
+    AdditionReq = db.Column(db.String(80))
+    PMail = db.Column(db.String(32), nullable=False)
+    TName = db.Column(db.String(32), nullable=False)
+    RecordTime = db.Column(db.DateTime, nullable=False)
+
 @login_manager.user_loader
 def load_user(userid):
-    return Principal.query.get(int(userid))
+    return Principal.query.get(int(userid)) or Tester.query.get(int(userid))
