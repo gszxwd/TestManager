@@ -1,10 +1,183 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-<p>Proof Record</p>
-</body>
-</html>
+{% extends "bootstrap/base.html" %}
+
+{% block title %}提交测试证明{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">第三方测试服务平台</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">主页</a></li>
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="contract">测试合同备案</a></li>
+                        <li><a href="proof">提交测试证明</a></li>
+                        <li><a href="advice">测试投诉建议</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="logout">{{ name }}，登出</a></li>
+                    {% else %}
+                        <li><a href="/">请登入</a></li>
+                    {% endif %}
+                </ul>
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <br/><br/><br/><br/>
+    <h2 class="text-center">提交测试证明</h2>
+    <form class="form-horizontal" method="post">
+        <div class="form-group">
+            <label for="name" class="col-sm-4 control-label">系统名称</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="name" placeholder="请输入被测系统名称" required autofocus>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="testtime" class="col-sm-4 control-label">测试起止</label>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name="teststart" placeholder="测试开始日期:年-月-日" required>
+            </div>
+            <div class="col-sm-2">
+                <input type="text" class="form-control" name="testend" placeholder="测试结束日期:年-月-日" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="basicreq" class="col-sm-4 control-label">基本测试项</label>
+            <div class="col-sm-4 controls">
+                <label class="checkbox-inline">
+                    <input name="basicreq" value="文档测试" type="checkbox" checked>文档测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="basicreq" value="功能测试" type="checkbox" checked>功能测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="basicreq" value="性能测试" type="checkbox">性能测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="basicreq" value="接口测试" type="checkbox">接口测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="basicreq" value="强度测试" type="checkbox">强度测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="basicreq" value="代码测试" type="checkbox">代码测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="basicreq" value="逻辑覆盖测试" type="checkbox">逻辑覆盖测试
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="additionreq" class="col-sm-4 control-label">附加测试项</label>
+            <div class="col-sm-4 controls">
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="标准符合测试" type="checkbox">标准符合测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="安全测试" type="checkbox">安全测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="人机界面测试" type="checkbox">人机界面测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="安装测试" type="checkbox">安装测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="余量测试" type="checkbox">余量测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="兼容测试" type="checkbox">兼容测试
+                </label>
+                <label class="checkbox-inline">
+                    <input name="additionreq" value="恢复测试" type="checkbox">恢复测试
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="version" class="col-sm-4 control-label">样本版本号</label>
+            <div class="col-sm-4">
+                <input type="version" class="form-control" name="regressnum" placeholder="样本版本号" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="regressnum" class="col-sm-4 control-label">回归次数</label>
+            <div class="col-sm-4">
+                <input type="number" class="form-control" name="regressnum" placeholder="回归测试次数" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="codelines" class="col-sm-4 control-label">代码行数</label>
+            <div class="col-sm-4">
+                <input type="number" class="form-control" name="codelines" placeholder="样品代码行数" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="testenv" class="col-sm-4 control-label">测试环境</label>
+            <div class="col-sm-4">
+                <label class="checkbox-inline">
+                    <input type="radio" name="testenv" value="1" checked>内场</input>
+                </label>
+                <label class="checkbox-inline">
+                    <input type="radio" name="testenv" value="2">外场</input>
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="cases" class="col-sm-4 control-label">用例数</label>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="designcases" placeholder="设计用例数" required>
+            </div>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="passedcases" placeholder="通过用例数" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="fatalbugs" class="col-sm-4 control-label">致命缺陷数</label>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="ffatalbugs" placeholder="发现致命缺陷数" required>
+            </div>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="rfatalbugs" placeholder="剩余致命缺陷数" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="criticbugs" class="col-sm-4 control-label">严重缺陷数</label>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="fcriticbugs" placeholder="发现严重缺陷数" required>
+            </div>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="rcriticbugs" placeholder="剩余严重缺陷数" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="commbugs" class="col-sm-4 control-label">一般缺陷数</label>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="fcommbugs" placeholder="发现一般缺陷数" required>
+            </div>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="rcommbugs" placeholder="剩余一般缺陷数" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="advisebugs" class="col-sm-4 control-label">建议缺陷数</label>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="fadvisebugs" placeholder="发现建议缺陷数" required>
+            </div>
+            <div class="col-sm-2">
+                <input type="number" class="form-control" name="radvisebugs" placeholder="剩余建议缺陷数" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-4 col-sm-4">
+                <button type="submit" class="btn btn-md btn-primary btn-block">提交</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

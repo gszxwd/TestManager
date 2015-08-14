@@ -32,6 +32,7 @@ def logout():
 
 @main.route('/contract', methods=['GET', 'POST'])
 def contract():
+    # todo: decide if the user is not tester
     if current_user.is_authenticated():
         if request.method == "POST":
             temps = request.form['onlinetime'].split('-')
@@ -72,13 +73,38 @@ def contract():
         flash('Please login first')
         return redirect(url_for('.login'))
 
-@main.route('/proof')
+@main.route('/proof', methods=['GET', 'POST'])
 def proof():
-    return render_template('proof.html')
+    # TODO: decide if the user is tester
+    if current_user.is_authenticated():
+        if request.method == "POST":
+            return redirect(url_for('.login'))
+        else:
+            systems = TestContract.query.filter_by(TName=session.get('name'))
+            temp = []
+            for system in systems:
+                temp.append(system.Name)
+            session['systems'] = temp
+            return render_template('proof.html', name=session.get('name'), systems=session.get('systems'))
+    else:
+        flash('Please login first')
+        return redirect(url_for('.login'))
 
 @main.route('/advice')
 def advice():
-    return render_template('advice.html')
+    if current_user.is_authenticated():
+        if request.method == "POST":
+            return redirect(url_for('.login'))
+        else:
+            testers = Tester.query.all()
+            temp = []
+            for tester in testers:
+                temp.append(tester.Name)
+            session['testers'] = temp
+            return render_template('advice.html', name=session.get('name'), testers=session.get('testers'))
+    else:
+        flash('Please login first')
+        return redirect(url_for('.login'))
 
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():

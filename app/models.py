@@ -71,6 +71,37 @@ class TestContract(db.Model):
     TName = db.Column(db.String(32), nullable=False)
     RecordTime = db.Column(db.DateTime, nullable=False)
 
+class TestEvidence(db.Model):
+    __tablename__ = "testevidence"
+    ID = db.Column(db.Integer, primary_key=True)
+    TestStart = db.Column(db.DateTime, nullable=False)
+    TestEnd = db.Column(db.DateTime, nullable=False)
+    BasicReq = db.Column(db.String(80), nullable=False)
+    AddtionReq = db.Column(db.String(80))
+    TestEnv = db.Column(db.String(1), nullable=False)
+    RegressNum = db.Column(db.Integer, nullable=False)
+    Version = db.Column(db.String(16), nullable=False)
+    CodeLines = db.Column(db.BigInteger, nullable=False)
+    DesignCases = db.Column(db.Integer, nullable=False)
+    PassedCases = db.Column(db.Integer, nullable=False)
+    FFatalBugs = db.Column(db.Integer, nullable=False)
+    RFatalBugs = db.Column(db.Integer, nullable=False)
+    FCriticBugs = db.Column(db.Integer, nullable=False)
+    RCriticBugs = db.Column(db.Integer, nullable=False)
+    FCommBugs = db.Column(db.Integer, nullable=False)
+    RCommBugs = db.Column(db.Integer, nullable=False)
+    FAdviseBugs = db.Column(db.Integer, nullable=False)
+    RAdviseBugs = db.Column(db.Integer, nullable=False)
+    UpdateTime = db.Column(db.DateTime, nullable=False)
+    EvalScore = db.Column(db.Numeric)
+
+class Advice(db.Model):
+    __tablename__ = "advice"
+    ID = db.Column(db.Integer, primary_key=True)
+    TName = db.Column(db.String(32), nullable=False)
+    Content = db.Column(db.String(256), nullable=False)
+    AdviceTime = db.Column(db.DateTime, nullable=False)
+
 @login_manager.user_loader
 def load_user(userid):
     return Principal.query.get(int(userid)) or Tester.query.get(int(userid))

@@ -58,15 +58,27 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <h3>测试合同备案</h3>
+                {% if current_user.is_authenticated() %}
+                    <h3><a href="contract">测试合同备案</a></h3>
+                {% else %}
+                    <h3>测试合同备案</h3>
+                {% endif %}
                 <p>定级测试，避免因信息系统软件失效引发的风险和责任</p>
             </div>
             <div class="col-md-4">
-                <h3>测试证明提交</h3>
+                {% if current_user.is_authenticated() %}
+                    <h3><a href="proof">测试证明提交</a></h3>
+                {% else %}
+                    <h3>测试证明提交</h3>
+                {% endif %}
                 <p>公正测试，保障参与行业第三方测试机构的权利和信用</p>
             </div>
             <div class="col-md-4">
-                <h3>投诉与建议</h3>
+                {% if current_user.is_authenticated() %}
+                    <h3><a href="advice">投诉与建议</a></h3>
+                {% else %}
+                    <h3>投诉与建议</h3>
+                {% endif %}
                 <p>监督测试，建立交通运输行业第三方测试健康市场秩序</p>
             </div>
         </div>
