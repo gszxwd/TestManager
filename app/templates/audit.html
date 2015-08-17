@@ -1,0 +1,43 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}监督审核{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/">第三方测试服务平台</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">主页</a></li>
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="contract">测试合同备案</a></li>
+                        <li><a href="proof">提交测试证明</a></li>
+                        <li><a href="advice">测试投诉建议</a></li>
+                    {% endif %}
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="logout">{{ name }}，登出</a></li>
+                    {% else %}
+                        <li><a href="/">请登入</a></li>
+                    {% endif %}
+                </ul>
+            </div><!--/.navbar-collapse -->
+        </div>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <br/><br/><br/><br/>
+    <h2 class="text-center">监督审核</h2>
+    <form class="form-horizontal" method="post">
+        <div class="form-group">
+            <label for="tname" class="col-sm-4 control-label">测试机构</label>
+            <div class="col-sm-4">
+            </div>
+        </div>
+
+    </form>
+{% endblock %}

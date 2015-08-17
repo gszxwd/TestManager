@@ -74,6 +74,8 @@ class TestContract(db.Model):
 class TestEvidence(db.Model):
     __tablename__ = "testevidence"
     ID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(64), nullable=False)
+    TMail = db.Column(db.String(32), nullable=False)
     TestStart = db.Column(db.DateTime, nullable=False)
     TestEnd = db.Column(db.DateTime, nullable=False)
     BasicReq = db.Column(db.String(80), nullable=False)

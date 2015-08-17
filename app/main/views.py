@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 from flask import render_template, request, session, redirect, url_for, flash
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from ..models import Principal, Tester, TestContract
+from ..models import Principal, Tester, TestContract, TestEvidence, Advice
 from .. import db
 from . import main
 
@@ -43,6 +43,7 @@ def contract():
             testrank = max(int(request.form['rangerate']),
                            int(request.form['capacityrate']),
                            int(request.form['safetyrate']))
+            # TODO: select list for NAME
             test_contract = TestContract(Name=request.form['name'],
                                          TName=request.form['tname'],
                                          Category=request.form['category'],
@@ -78,6 +79,34 @@ def proof():
     # TODO: decide if the user is tester
     if current_user.is_authenticated():
         if request.method == "POST":
+            start = request.form['teststart'].split('-')
+            end = request.form['testend'].split('-')
+            basicreqs = request.form.getlist('basicreq')
+            additionreqs = request.form.getlist('additionreq')
+            evidence = TestEvidence(Name=request.form['name'],
+                                    TMail=session.get('name'),
+                                    TestStart=datetime(int(start[0]),int(start[1]),int(start[2])),
+                                    TestEnd=datetime(int(end[0]),int(end[1]),int(end[2])),
+                                    BasicReq=','.join(basicreqs),
+                                    AddtionReq=','.join(additionreqs),
+                                    TestEnv=request.form['testenv'],
+                                    RegressNum=int(request.form['regressnum']),
+                                    Version=request.form['version'],
+                                    CodeLines=int(request.form['codelines']),
+                                    DesignCases=int(request.form['designcases']),
+                                    PassedCases=int(request.form['passedcases']),
+                                    FFatalBugs=int(request.form['ffatalbugs']),
+                                    RFatalBugs=int(request.form['rfatalbugs']),
+                                    FCriticBugs=int(request.form['fcriticbugs']),
+                                    RCriticBugs=int(request.form['rcriticbugs']),
+                                    FCommBugs=int(request.form['fcommbugs']),
+                                    RCommBugs=int(request.form['rcommbugs']),
+                                    FAdviseBugs=int(request.form['fadvisebugs']),
+                                    RAdviseBugs=int(request.form['radvisebugs']),
+                                    UpdateTime=datetime.now())
+            db.create_all()
+            db.session.add(evidence)
+            db.session.commit()
             return redirect(url_for('.login'))
         else:
             systems = TestContract.query.filter_by(TName=session.get('name'))
@@ -90,10 +119,16 @@ def proof():
         flash('Please login first')
         return redirect(url_for('.login'))
 
-@main.route('/advice')
+@main.route('/advice', methods=['GET', 'POST'])
 def advice():
     if current_user.is_authenticated():
         if request.method == "POST":
+            advice = Advice(TName=request.form['tname'],
+                            Content=request.form['content'],
+                            AdviceTime=datetime.now())
+            db.create_all()
+            db.session.add(advice)
+            db.session.commit()
             return redirect(url_for('.login'))
         else:
             testers = Tester.query.all()
@@ -199,3 +234,7 @@ def signup2():
         return redirect(url_for(".login"))
     else:
         return render_template('signup2.html', name=session.get('name'))
+
+@main.route('/audit', methods=['GET', 'POST'])
+def audit():
+    return render_template('audit.html')
