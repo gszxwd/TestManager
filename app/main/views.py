@@ -237,4 +237,14 @@ def signup2():
 
 @main.route('/audit', methods=['GET', 'POST'])
 def audit():
+    if request.method == 'POST':
+        return redirect(url_for(".audit2"))
     return render_template('audit.html')
+
+@main.route('/audit2', methods=['GET', 'POST'])
+def audit2():
+    return render_template('audit2.html')
+
+@main.route('/supervise', methods=['GET', 'POST'])
+def supervise():
+    return render_template('supervise.html')

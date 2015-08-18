@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}审核{% endblock %}
+{% block title %}监督{% endblock %}
 
 {% block navbar %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -31,15 +31,35 @@
 
 {% block content %}
     <br/><br/><br/><br/>
-    <h2 class="text-center">审核</h2>
+    <h2 class="text-center">监督</h2>
     <form class="form-horizontal" method="post">
         <div class="form-group">
-            <label for="tname" class="col-sm-4 control-label">请选择待审核的测试机构</label>
+            <label for="tname" class="col-sm-4 control-label">测试机构</label>
             <div class="col-sm-4">
-                <select multiple class="form-control">
+                <select class="form-control">
                     <option>A</option>
                     <option>B</option>
                 </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="stype" class="col-sm-4 control-label">监督处罚</label>
+            <div class="col-sm-4 control">
+                <label class="checkbox-inline">
+                    <input name="stype" value="1" type="radio" checked>例行监督
+                </label>
+                <label class="checkbox-inline">
+                    <input name="stype" value="2" type="radio">行政处罚
+                </label>
+                <label class="checkbox-inline">
+                    <input name="stype" value="3" type="radio">黑名单处罚
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="reason" class="col-sm-4 control-label">情况说明</label>
+            <div class="col-sm-4">
+                <textarea class="form-control" rows="5" name="reason" placeholder="情况说明内容"></textarea>
             </div>
         </div>
         <div class="form-group">
