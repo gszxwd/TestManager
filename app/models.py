@@ -104,6 +104,23 @@ class Advice(db.Model):
     Content = db.Column(db.String(256), nullable=False)
     AdviceTime = db.Column(db.DateTime, nullable=False)
 
+class Supervision(db.Model):
+    __tablename__ = "supervision"
+    ID = db.Column(db.Integer, primary_key=True)
+    TName = db.Column(db.String(32), nullable=False)
+    AName = db.Column(db.String(16), nullable=False)
+    SType = db.Column(db.String(1), nullable=False)
+    Content = db.Column(db.String(256), nullable=False)
+    Time = db.Column(db.DateTime, nullable=False)
+    EndTime = db.Column(db.DateTime, nullable=False)
+
+class News(db.Model):
+    __tablename__ = "news"
+    ID = db.Column(db.Integer, primary_key=True)
+    AName = db.Column(db.String(16), nullable=False)
+    Content = db.Column(db.String(256), nullable=False)
+    Time = db.Column(db.DateTime, nullable=False)
+
 @login_manager.user_loader
 def load_user(userid):
     return Principal.query.get(int(userid)) or Tester.query.get(int(userid))

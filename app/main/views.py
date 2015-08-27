@@ -1,10 +1,10 @@
 __author__ = 'Xu Zhao'
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 from flask import render_template, request, session, redirect, url_for, flash
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from ..models import Principal, Tester, TestContract, TestEvidence, Advice
+from ..models import Principal, Tester, TestContract, TestEvidence, Advice, Supervision
 from .. import db
 from . import main
 
@@ -235,16 +235,34 @@ def signup2():
     else:
         return render_template('signup2.html', name=session.get('name'))
 
+
 @main.route('/audit', methods=['GET', 'POST'])
 def audit():
     if request.method == 'POST':
+        session['tname'] = request.form['tname']
         return redirect(url_for(".audit2"))
     return render_template('audit.html')
 
+
 @main.route('/audit2', methods=['GET', 'POST'])
 def audit2():
-    return render_template('audit2.html')
+    return render_template('audit2.html', tname=session.get('tname'))
+
 
 @main.route('/supervise', methods=['GET', 'POST'])
 def supervise():
-    return render_template('supervise.html')
+    if request.method == 'POST':
+        end_time = datetime.now()
+        if request.form['stype'] == '3':
+            end_time = end_time + timedelta(365)
+        superv = Supervision(TName=request.form['tname'],
+                             SType=request.form['stype'],
+                             Content=request.form['content'],
+                             Time=datetime.now(),
+                             EndTime=end_time,
+                             AName=session.get('name'))
+        db.create_all()
+        db.session.add(superv)
+        db.session.commit()
+        return redirect(url_for(".supervise"))
+    return render_template('supervise.html', name=session.get('name'))
