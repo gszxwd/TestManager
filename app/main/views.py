@@ -180,7 +180,7 @@ def signup():
     else:
         return render_template('signup.html')
 
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
 
@@ -214,18 +214,19 @@ def signup2():
             tester.CMAStart = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
             temps = request.form['certend'].split('-')
             tester.CMAEnd = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
-        # TODO: absolute and unique path & create directory
         cmafile = request.files['cmafile']
+        tempdir = "app/static/"+datetime.now().strftime("%Y%m%d%H%M%S")
+        os.makedirs(os.path.abspath(tempdir))
         if cmafile and allowed_file(cmafile.filename):
-            tester.CMAPath = os.path.join("D://uploads//", cmafile.filename)
+            tester.CMAPath = os.path.abspath(os.path.join(tempdir, cmafile.filename))
             cmafile.save(tester.CMAPath)
         cnasfile = request.files['cnasfile']
         if cnasfile and allowed_file(cnasfile.filename):
-            tester.CNASPath = os.path.join("D://uploads//", cnasfile.filename)
+            tester.CNASPath = os.path.abspath(os.path.join(tempdir, cnasfile.filename))
             cnasfile.save(tester.CNASPath)
         certfile = request.files['certfile']
         if certfile and allowed_file(certfile.filename):
-            tester.CertPath = os.path.join("D://uploads//", certfile.filename)
+            tester.CertPath = os.path.abspath(os.path.join(tempdir, certfile.filename))
             certfile.save(tester.CertPath)
         testrange = request.form.getlist('testrange')
         tester.TestRange = ','.join(testrange)
@@ -238,31 +239,94 @@ def signup2():
 
 @main.route('/audit', methods=['GET', 'POST'])
 def audit():
-    if request.method == 'POST':
-        session['tname'] = request.form['tname']
-        return redirect(url_for(".audit2"))
-    return render_template('audit.html')
+    if current_user.is_authenticated():
+        if request.method == 'POST':
+            session['tname'] = request.form['tname']
+            return redirect(url_for(".audit2"))
+        else:
+            testers = Tester.query.all()
+            temp = []
+            for tester in testers:
+                if tester.IsChecked == False:
+                    temp.append(tester.Name)
+            session['testers'] = temp
+            return render_template('audit.html', name=session.get('name'), testers=session.get('testers'))
+    else:
+        flash('Please login first')
+        return redirect(url_for(".login"))
 
 
 @main.route('/audit2', methods=['GET', 'POST'])
 def audit2():
-    return render_template('audit2.html', tname=session.get('tname'))
+    if current_user.is_authenticated():
+        if request.method == 'POST':
+            tester = Tester.query.filter_by(Name=session.get('tname')).first()
+            tester.IsChecked = True
+            tester.CheckName = session.get('name')
+            tester.CheckTime = datetime.now()
+            db.session.commit()
+            return redirect(url_for('.audit'))
+        else:
+            tester = Tester.query.filter_by(Name=session.get('tname')).first()
+            temp = []
+            temp.append(tester.Address)                             #0
+            temp.append(tester.EstbTime.strftime("%Y-%m-%d"))       #1
+            temp.append(tester.Contacts)                            #2
+            temp.append(tester.Telephone)                           #3
+            temp.append(tester.TestRange)                           #4
+            temp.append(tester.RegTime.strftime("%Y-%m-%d"))        #5
+            if tester.HasCMA == True:
+                pos = tester.CMAPath.find('static')
+                dirstr = tester.CMAPath[pos:]
+                dirstr.replace('\\', '/')
+                temp.append(dirstr)                                 #6
+                temp.append(tester.CMAStart.strftime("%Y-%m-%d"))   #7
+                temp.append(tester.CMAEnd.strftime("%Y-%m-%d"))     #8
+            if tester.HasCNAS == True:
+                pos = tester.CNASPath.find('static')
+                dirstr = tester.CNASPath[pos:]
+                dirstr = dirstr.replace('\\', '/')
+                temp.append(dirstr)
+                temp.append(tester.CNASStart.strftime("%Y-%m-%d"))
+                temp.append(tester.CNASEnd.strftime("%Y-%m-%d"))
+            if tester.HasCert == True:
+                pos = tester.CertPath.find('static')
+                dirstr = tester.CertPath[pos:]
+                dirstr = dirstr.replace('\\', '/')
+                temp.append(dirstr)
+                temp.append(tester.CertStart.strftime("%Y-%m-%d"))
+                temp.append(tester.CertEnd.strftime("%Y-%m-%d"))
+            session['tester'] = temp
+            return render_template('audit2.html', tname=session.get('tname'), name=session.get('name'), tester=session.get('tester'))
+    else:
+        flash('Please login first')
+        return redirect(url_for('.login'))
 
 
 @main.route('/supervise', methods=['GET', 'POST'])
 def supervise():
-    if request.method == 'POST':
-        end_time = datetime.now()
-        if request.form['stype'] == '3':
-            end_time = end_time + timedelta(365)
-        superv = Supervision(TName=request.form['tname'],
-                             SType=request.form['stype'],
-                             Content=request.form['content'],
-                             Time=datetime.now(),
-                             EndTime=end_time,
-                             AName=session.get('name'))
-        db.create_all()
-        db.session.add(superv)
-        db.session.commit()
-        return redirect(url_for(".supervise"))
-    return render_template('supervise.html', name=session.get('name'))
+    if current_user.is_authenticated():
+        if request.method == 'POST':
+            end_time = datetime.now()
+            if request.form['stype'] == '3':
+                end_time = end_time + timedelta(365)
+            superv = Supervision(TName=request.form['tname'],
+                                 SType=request.form['stype'],
+                                 Content=request.form['content'],
+                                 Time=datetime.now(),
+                                 EndTime=end_time,
+                                 AName=session.get('name'))
+            db.create_all()
+            db.session.add(superv)
+            db.session.commit()
+            return redirect(url_for(".supervise"))
+        else:
+            testers = Tester.query.all()
+            temp = []
+            for tester in testers:
+                temp.append(tester.Name)
+            session['testers'] = temp
+            return render_template('supervise.html', name=session.get('name'), testers=session.get('testers'))
+    else:
+        flash('Please login first')
+        return redirect(url_for('.login'))

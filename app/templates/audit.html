@@ -37,8 +37,9 @@
             <label for="tname" class="col-sm-4 control-label">请选择待审核的测试机构</label>
             <div class="col-sm-4">
                 <select multiple class="form-control" name="tname">
-                    <option selected="selected">A</option>
-                    <option>B</option>
+                    {%  for tester in testers %}
+                        <option>{{ tester }}</option>
+                    {% endfor %}
                 </select>
             </div>
         </div>

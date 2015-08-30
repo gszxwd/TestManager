@@ -40,13 +40,89 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="image" class="col-sm-4 control-label">请选择待审核的测试机构</label>
+            <label for="address" class="col-sm-4 control-label">机构地址</label>
             <div class="col-sm-4">
-                <a href="static/Lighthouse2.jpg" class="thumbnail">
-                    <img src="static/Lighthouse2.jpg">
+                <label class="control-label">{{ tester[0] }}</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="etime" class="col-sm-4 control-label">成立时间</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[1] }}</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="contact" class="col-sm-4 control-label">联系人员</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[2] }}</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="telephone" class="col-sm-4 control-label">联系电话</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[3] }}</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="testrange" class="col-sm-4 control-label">测试范围</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[4] }}</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="rtime" class="col-sm-4 control-label">注册时间</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[5] }}</label>
+            </div>
+        </div>
+        {% if tester|length > 6 %}
+        <div class="form-group">
+            <label for="image1" class="col-sm-4 control-label">资质文件</label>
+            <div class="col-sm-4">
+                <a href={{ tester[6] }} class="thumbnail">
+                    <img src={{ tester[6] }}>
                 </a>
             </div>
         </div>
+        <div class="form-group">
+            <label for="setime1" class="col-sm-4 control-label">起止时间</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[7] }}至{{ tester[8] }}</label>
+            </div>
+        </div>
+        {% endif %}
+        {% if tester|length > 9 %}
+        <div class="form-group">
+            <label for="image2" class="col-sm-4 control-label">资质文件</label>
+            <div class="col-sm-4">
+                <a href={{ tester[9] }} class="thumbnail">
+                    <img src={{ tester[9] }}>
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="setime2" class="col-sm-4 control-label">起止时间</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[10] }}至{{ tester[11] }}</label>
+            </div>
+        </div>
+        {% endif %}
+        {% if tester|length > 12 %}
+        <div class="form-group">
+            <label for="image3" class="col-sm-4 control-label">资质文件</label>
+            <div class="col-sm-4">
+                <a href={{ tester[12] }} class="thumbnail">
+                    <img src={{ tester[12] }}>
+                </a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="setime3" class="col-sm-4 control-label">起止时间</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ tester[13] }}至{{ tester[14] }}</label>
+            </div>
+        </div>
+        {% endif %}
         <div class="form-group">
             <div class="col-sm-offset-4 col-sm-2">
                 <button type="submit" class="btn btn-md btn-primary btn-block">通过</button>
