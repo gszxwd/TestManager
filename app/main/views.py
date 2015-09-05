@@ -16,24 +16,25 @@ def login():
             prcp = Tester.query.filter_by(Email=request.form["inputEmail"]).first()
         if prcp is not None and prcp.Email == request.form["inputEmail"] and prcp.Password == request.form["inputPassword"]:
             session['name'] = prcp.Email
+            session['priv'] = prcp.Role
             login_user(prcp)
             return redirect(url_for('.login'))
         else:
             flash('Invalid User/Password')
             return redirect(url_for('.signup'))
     else:
-        return render_template('index.html', name=session.get('name'))
+        return render_template('index.html', name=session.get('name'), priv=session.get('priv'))
 
 @main.route('/logout')
 def logout():
     logout_user()
+    session.clear()
     flash('You have been logged out.')
     return redirect(url_for('.login'))
 
 @main.route('/contract', methods=['GET', 'POST'])
 def contract():
-    # todo: decide if the user is not tester
-    if current_user.is_authenticated():
+    if current_user.is_authenticated() and (session['priv']=='1' or session['priv']=='2'):
         if request.method == "POST":
             temps = request.form['onlinetime'].split('-')
             isupdated = False
@@ -43,7 +44,6 @@ def contract():
             testrank = max(int(request.form['rangerate']),
                            int(request.form['capacityrate']),
                            int(request.form['safetyrate']))
-            # TODO: select list for NAME
             test_contract = TestContract(Name=request.form['name'],
                                          TName=request.form['tname'],
                                          Category=request.form['category'],
@@ -69,15 +69,14 @@ def contract():
             for tester in testers:
                 temp.append(tester.Name)
             session['testers'] = temp
-            return render_template('contract.html', name=session.get('name'), testers=session.get('testers'))
+            return render_template('contract.html', name=session.get('name'), priv=session.get('priv'), testers=session.get('testers'))
     else:
         flash('Please login first')
         return redirect(url_for('.login'))
 
 @main.route('/proof', methods=['GET', 'POST'])
 def proof():
-    # TODO: decide if the user is tester
-    if current_user.is_authenticated():
+    if current_user.is_authenticated() and session['priv']=='4':
         if request.method == "POST":
             start = request.form['teststart'].split('-')
             end = request.form['testend'].split('-')
@@ -114,14 +113,14 @@ def proof():
             for system in systems:
                 temp.append(system.Name)
             session['systems'] = temp
-            return render_template('proof.html', name=session.get('name'), systems=session.get('systems'))
+            return render_template('proof.html', name=session.get('name'), priv=session.get('priv'), systems=session.get('systems'))
     else:
         flash('Please login first')
         return redirect(url_for('.login'))
 
 @main.route('/advice', methods=['GET', 'POST'])
 def advice():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated() and (session['priv']=='1' or session['priv']=='2' or session['priv']=='3'):
         if request.method == "POST":
             advice = Advice(TName=request.form['tname'],
                             Content=request.form['content'],
@@ -136,7 +135,7 @@ def advice():
             for tester in testers:
                 temp.append(tester.Name)
             session['testers'] = temp
-            return render_template('advice.html', name=session.get('name'), testers=session.get('testers'))
+            return render_template('advice.html', name=session.get('name'), priv=session.get('priv'), testers=session.get('testers'))
     else:
         flash('Please login first')
         return redirect(url_for('.login'))
@@ -178,7 +177,7 @@ def signup():
             session['name'] = tester.Email
             return redirect(url_for(".signup2"))
     else:
-        return render_template('signup.html')
+        return render_template('signup.html', name=session.get('name'))
 
 ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg'])
 def allowed_file(filename):
@@ -239,7 +238,7 @@ def signup2():
 
 @main.route('/audit', methods=['GET', 'POST'])
 def audit():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated() and session['priv']=='5':
         if request.method == 'POST':
             session['tname'] = request.form['tname']
             return redirect(url_for(".audit2"))
@@ -250,7 +249,7 @@ def audit():
                 if tester.IsChecked == False:
                     temp.append(tester.Name)
             session['testers'] = temp
-            return render_template('audit.html', name=session.get('name'), testers=session.get('testers'))
+            return render_template('audit.html', name=session.get('name'), priv=session.get('priv'), testers=session.get('testers'))
     else:
         flash('Please login first')
         return redirect(url_for(".login"))
@@ -258,7 +257,7 @@ def audit():
 
 @main.route('/audit2', methods=['GET', 'POST'])
 def audit2():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated() and session['priv']=='5':
         if request.method == 'POST':
             tester = Tester.query.filter_by(Name=session.get('tname')).first()
             tester.IsChecked = True
@@ -297,7 +296,7 @@ def audit2():
                 temp.append(tester.CertStart.strftime("%Y-%m-%d"))
                 temp.append(tester.CertEnd.strftime("%Y-%m-%d"))
             session['tester'] = temp
-            return render_template('audit2.html', tname=session.get('tname'), name=session.get('name'), tester=session.get('tester'))
+            return render_template('audit2.html', tname=session.get('tname'), name=session.get('name'), priv=session.get('priv'), tester=session.get('tester'))
     else:
         flash('Please login first')
         return redirect(url_for('.login'))
@@ -305,7 +304,7 @@ def audit2():
 
 @main.route('/supervise', methods=['GET', 'POST'])
 def supervise():
-    if current_user.is_authenticated():
+    if current_user.is_authenticated() and session['priv']=='5':
         if request.method == 'POST':
             end_time = datetime.now()
             if request.form['stype'] == '3':
@@ -326,7 +325,7 @@ def supervise():
             for tester in testers:
                 temp.append(tester.Name)
             session['testers'] = temp
-            return render_template('supervise.html', name=session.get('name'), testers=session.get('testers'))
+            return render_template('supervise.html', name=session.get('name'), priv=session.get('priv'), testers=session.get('testers'))
     else:
         flash('Please login first')
         return redirect(url_for('.login'))

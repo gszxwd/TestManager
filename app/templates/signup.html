@@ -12,6 +12,13 @@
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="/">主页</a></li>
                 </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated() %}
+                        <li><a href="logout">{{ name }}，登出</a></li>
+                    {% else %}
+                        <li><a href="/">请登入</a></li>
+                    {% endif %}
+                </ul>
             </div><!--/.navbar-collapse -->
         </div>
     </nav>
