@@ -54,7 +54,7 @@
         <div class="form-group">
             <label for="tname" class="col-sm-4 control-label">请选择待审核的测试机构</label>
             <div class="col-sm-4">
-                <select multiple class="form-control" name="tname">
+                <select class="form-control" name="tname">
                     {%  for tester in testers %}
                         <option>{{ tester }}</option>
                     {% endfor %}

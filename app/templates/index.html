@@ -67,6 +67,15 @@
                         <input type="password" name="inputPassword" class="form-control" placeholder="请输入密码" required>
                         <br/>
                         <button class="btn btn-md btn-primary btn-block" type="submit">登录</button>
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <ul class="flash">
+                                    {% for message in messages %}
+                                        <b><font color="red">{{ message }}</font>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
                     </form>
                 </div>
             </div>
@@ -104,6 +113,7 @@
 
     <br/>
     <footer style="text-align:center;margin:auto">
-        <p>&copy; Copyright 2015</p>
+        <p>交通运输部科学研究院&copy; Copyright 2015</p>
+        <p>联系电话：010-5827xxxx；联系邮件：xxx@xxx.com</p>
     </footer>
 {% endblock %}

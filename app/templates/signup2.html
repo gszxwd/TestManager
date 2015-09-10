@@ -105,12 +105,41 @@
                 <label class="checkbox-inline">
                     <input name="testrange" value="可靠性" type="checkbox">可靠性
                 </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="易用性" type="checkbox">易用性
+                </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="维护性" type="checkbox">维护性
+                </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="可移植性" type="checkbox">可移植性
+                </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="可用性" type="checkbox">可用性
+                </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="文档审查" type="checkbox">文档审查
+                </label>
+                <label class="checkbox-inline">
+                    <input name="testrange" value="代码审查" type="checkbox">代码审查
+                </label>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-offset-4 col-sm-4">
                 <button type="submit" class="btn btn-md btn-primary btn-block">备案</button>
             </div>
+        </div>
+        <div class="col-sm-offset-4 col-sm-4">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash">
+                        {% for message in messages %}
+                            <b><font color="red">{{ message }}</font>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
         </div>
     </form>
 {% endblock %}

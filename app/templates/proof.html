@@ -197,5 +197,16 @@
                 <button type="submit" class="btn btn-md btn-primary btn-block">提交</button>
             </div>
         </div>
+        <div class="col-sm-offset-4 col-sm-4">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flash">
+                        {% for message in messages %}
+                            <b><font color="red">{{ message }}</font>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+        </div>
     </form>
 {% endblock %}
