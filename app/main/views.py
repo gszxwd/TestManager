@@ -20,6 +20,14 @@ def login():
             session['priv'] = prcp.Role
             if session['priv'] == '4':
                 session['checked'] = prcp.IsChecked
+                # black-list filtering
+                blacklists = Supervision.query.filter_by(TName=prcp.Name).filter_by(SType="3").all()
+                isBlacked = False
+                for black in blacklists:
+                    if black.EndTime > datetime.now():
+                        isBlacked = True
+                        break
+                session['black'] = isBlacked
             login_user(prcp)
             return redirect(url_for('.login'))
         else:
@@ -70,11 +78,18 @@ def contract():
                 return redirect(url_for('.contract'))
             return redirect(url_for('.login'))
         else:
-            # TODO: black-list filtering
             testers = Tester.query.filter_by(IsChecked=True).all()
             temp = []
             for tester in testers:
-                temp.append(tester.Name)
+                # black-list filtering
+                blacklists = Supervision.query.filter_by(TName=tester.Name).filter_by(SType="3").all()
+                isBlacked = False
+                for black in blacklists:
+                    if black.EndTime > datetime.now():
+                        isBlacked = True
+                        break
+                if isBlacked == False:
+                    temp.append(tester.Name)
             session['testers'] = temp
             return render_template('contract.html', name=session.get('name'), priv=session.get('priv'), testers=session.get('testers'))
     else:
@@ -83,9 +98,11 @@ def contract():
 
 @main.route('/proof', methods=['GET', 'POST'])
 def proof():
-    # TODO: black-list filtering
     if session['checked'] == False:
         flash(u'该机构尚未通过审核，请联系审核员')
+        return redirect(url_for('.login'))
+    if session['black'] == True:
+        flash(u'该机构被列入黑名单，请联系审核员')
         return redirect(url_for('.login'))
     if current_user.is_authenticated() and session['priv']=='4':
         if request.method == "POST":
@@ -196,6 +213,7 @@ def signup():
                                 HasCNAS=False,
                                 HasCert=False,
                                 IsChecked=False,
+                                EstbTime=datetime(2099,1,1),
                                 RegTime=datetime.now())
                 db.create_all()
                 db.session.add(tester)
@@ -218,14 +236,14 @@ def signup2():
     if request.method == "POST":
         try:
             tester = Tester.query.filter_by(Email=session.get('name')).first()
-            types = request.form.getlist('certtype')
-            for ty in types:
-                if ty == u"hascma":
-                    tester.HasCMA = True
-                if ty == u"hascnas":
-                    tester.HasCNAS = True
-                if ty == u"hascert":
-                    tester.HasCert = True
+            #types = request.form.getlist('certtype')
+            #for ty in types:
+            #    if ty == u"hascma":
+            #        tester.HasCMA = True
+            #    if ty == u"hascnas":
+            #        tester.HasCNAS = True
+            #    if ty == u"hascert":
+            #        tester.HasCert = True
             if request.form['estbtime']:
                 temps = request.form['estbtime'].split('-')
                 tester.EstbTime = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
@@ -250,14 +268,17 @@ def signup2():
             if cmafile and allowed_file(cmafile.filename):
                 tester.CMAPath = os.path.abspath(os.path.join(tempdir, cmafile.filename))
                 cmafile.save(tester.CMAPath)
+                tester.HasCMA = True
             cnasfile = request.files['cnasfile']
             if cnasfile and allowed_file(cnasfile.filename):
                 tester.CNASPath = os.path.abspath(os.path.join(tempdir, cnasfile.filename))
                 cnasfile.save(tester.CNASPath)
+                tester.HasCNAS = True
             certfile = request.files['certfile']
             if certfile and allowed_file(certfile.filename):
                 tester.CertPath = os.path.abspath(os.path.join(tempdir, certfile.filename))
                 certfile.save(tester.CertPath)
+                tester.HasCert = True
             testrange = request.form.getlist('testrange')
             tester.TestRange = ','.join(testrange)
             db.session.commit()
@@ -311,21 +332,21 @@ def audit2():
             if tester.HasCMA == True:
                 pos = tester.CMAPath.find('static')
                 dirstr = tester.CMAPath[pos:]
-                dirstr.replace('\\', '/')
+                dirstr = '/'.join(dirstr.split('\\'))
                 temp.append(dirstr)                                 #6
                 temp.append(tester.CMAStart.strftime("%Y-%m-%d"))   #7
                 temp.append(tester.CMAEnd.strftime("%Y-%m-%d"))     #8
             if tester.HasCNAS == True:
                 pos = tester.CNASPath.find('static')
                 dirstr = tester.CNASPath[pos:]
-                dirstr = dirstr.replace('\\', '/')
+                dirstr = '/'.join(dirstr.split('\\'))
                 temp.append(dirstr)
                 temp.append(tester.CNASStart.strftime("%Y-%m-%d"))
                 temp.append(tester.CNASEnd.strftime("%Y-%m-%d"))
             if tester.HasCert == True:
                 pos = tester.CertPath.find('static')
                 dirstr = tester.CertPath[pos:]
-                dirstr = dirstr.replace('\\', '/')
+                dirstr = '/'.join(dirstr.split('\\'))
                 temp.append(dirstr)
                 temp.append(tester.CertStart.strftime("%Y-%m-%d"))
                 temp.append(tester.CertEnd.strftime("%Y-%m-%d"))
