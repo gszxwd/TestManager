@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}审核{% endblock %}
+{% block title %}浏览{% endblock %}
 
 {% block navbar %}
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -50,21 +50,32 @@
 
 {% block content %}
     <br/><br/><br/><br/>
-    <h2 class="text-center">审核</h2>
+    <h2 class="text-center">浏览投诉建议</h2>
     <form class="form-horizontal" method="post">
-        <div class="form-group">
-            <label for="tname" class="col-sm-4 control-label">请选择待审核的测试机构</label>
+        {% for i in range((advices|length)/3) %}
+        <div class="row">
+            <label for="date" class="col-sm-4 control-label">投诉建议时间</label>
             <div class="col-sm-4">
-                <select class="form-control" name="tname">
-                    {%  for tester in testers %}
-                        <option>{{ tester }}</option>
-                    {% endfor %}
-                </select>
+                <label class="control-label">{{ advices[0+(i*3)] }}</label>
             </div>
         </div>
+        <div class="row">
+            <label for="tname" class="col-sm-4 control-label">测试机构名称</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ advices[1+(i*3)] }}</label>
+            </div>
+        </div>
+        <div class="row">
+            <label for="content" class="col-sm-4 control-label">投诉建议内容</label>
+            <div class="col-sm-4">
+                <label class="control-label">{{ advices[2+(i*3)] }}</label>
+            </div>
+        </div>
+        <div class="row"><p></p></div>
+        {% endfor %}
         <div class="form-group">
             <div class="col-sm-offset-4 col-sm-4">
-                <button type="submit" class="btn btn-md btn-primary btn-block">提交</button>
+                <button type="submit" class="btn btn-md btn-primary btn-block">返回</button>
             </div>
         </div>
     </form>

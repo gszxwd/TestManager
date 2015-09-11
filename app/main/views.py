@@ -12,6 +12,7 @@ from . import main
 @main.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
+        session.clear()     # for re-login
         prcp = Principal.query.filter_by(Email=request.form["inputEmail"]).first()
         if prcp is None:
             prcp = Tester.query.filter_by(Email=request.form["inputEmail"]).first()
@@ -385,6 +386,24 @@ def supervise():
                 temp.append(tester.Name)
             session['testers'] = temp
             return render_template('supervise.html', name=session.get('name'), priv=session.get('priv'), testers=session.get('testers'))
+    else:
+        flash('Please login first')
+        return redirect(url_for('.login'))
+
+@main.route('/browse', methods=['GET', 'POST'])
+def browse():
+    if current_user.is_authenticated() and session['priv']=='5':
+        if request.method == "POST":
+            return redirect(url_for('.login'))
+        else:
+            advices = Advice.query.all()
+            temp = []
+            for advice in advices:
+                temp.append(advice.AdviceTime.strftime("%Y-%m-%d"))
+                temp.append(advice.TName)
+                temp.append(advice.Content)
+            session['advices'] = temp
+            return render_template('browse.html', name=session.get('name'), priv=session.get('priv'), advices=session.get('advices'))
     else:
         flash('Please login first')
         return redirect(url_for('.login'))
