@@ -12,28 +12,33 @@ from . import main
 @main.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == "POST":
-        session.clear()     # for re-login
-        prcp = Principal.query.filter_by(Email=request.form["inputEmail"]).first()
-        if prcp is None:
-            prcp = Tester.query.filter_by(Email=request.form["inputEmail"]).first()
-        if prcp is not None and prcp.Email == request.form["inputEmail"] and prcp.Password == request.form["inputPassword"]:
-            session['name'] = prcp.Email
-            session['priv'] = prcp.Role
-            if session['priv'] == '4':
-                session['checked'] = prcp.IsChecked
-                # black-list filtering
-                blacklists = Supervision.query.filter_by(TName=prcp.Name).filter_by(SType="3").all()
-                isBlacked = False
-                for black in blacklists:
-                    if black.EndTime > datetime.now():
-                        isBlacked = True
-                        break
-                session['black'] = isBlacked
-            login_user(prcp)
+        try:
+            session.clear()     # for re-login
+            prcp = Principal.query.filter_by(Email=request.form["inputEmail"]).first()
+            if prcp is None:
+                prcp = Tester.query.filter_by(Email=request.form["inputEmail"]).first()
+            if prcp is not None and prcp.Password == request.form["inputPassword"]:
+                session['name'] = prcp.Email
+                session['priv'] = prcp.Role
+                if session['priv'] == '4':
+                    session['checked'] = prcp.IsChecked
+                    # black-list filtering
+                    blacklists = Supervision.query.filter_by(TName=prcp.Name).filter_by(SType="3").all()
+                    isBlacked = False
+                    for black in blacklists:
+                        if black.EndTime > datetime.now():
+                            isBlacked = True
+                            break
+                    session['black'] = isBlacked
+                login_user(prcp)
+                #return redirect(url_for('.login'))
+            else:
+                flash(u'无效的用户名或密码')
+                return redirect(url_for('.login'))
+        except:
+            flash(u'登录错误，请重试')
             return redirect(url_for('.login'))
-        else:
-            flash(u'无效的用户名或密码')
-            return redirect(url_for('.login'))
+        return redirect(url_for('.login'))
     else:
         return render_template('index.html', name=session.get('name'), priv=session.get('priv'))
 
@@ -75,6 +80,8 @@ def contract():
                 db.session.add(test_contract)
                 db.session.commit()
             except:
+                db.session.rollback()
+                db.session.flush()
                 flash(u'填写错误，请重新检查后再提交')
                 return redirect(url_for('.contract'))
             return redirect(url_for('.login'))
@@ -137,6 +144,8 @@ def proof():
                 db.session.add(evidence)
                 db.session.commit()
             except:
+                db.session.rollback()
+                db.session.flush()
                 flash(u'填写错误，请重新检查后再提交')
                 return redirect(url_for('.proof'))
             return redirect(url_for('.login'))
@@ -163,6 +172,8 @@ def advice():
                 db.session.add(advice)
                 db.session.commit()
             except:
+                db.session.rollback()
+                db.session.flush()
                 flash(u'填写错误，请重新检查后再提交')
                 return redirect(url_for('.advice'))
             return redirect(url_for('.login'))
@@ -178,9 +189,33 @@ def advice():
         flash('Please login first')
         return redirect(url_for('.login'))
 
+def password_test(str):
+    if len(str) < 8:
+        return False
+    charFlag = False
+    numFlag = False
+    for ch in str:
+        if ord(ch)>=65 and ord(ch)<=90:
+            charFlag = True
+        if ord(ch)>=97 and ord(ch)<=122:
+            charFlag = True
+        if ord(ch)>=32 and ord(ch)<=64:
+            numFlag = True
+    if charFlag and numFlag:
+        return True
+    else:
+        return False
+
+
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == "POST":
+        if request.form['password'] != request.form['password2']:
+            flash(u'密码不匹配，请重新输入')
+            return redirect(url_for('.signup'))
+        if not password_test(request.form['password']):
+            flash(u'请保证数字和字母组合的8位以上密码强度')
+            return redirect(url_for('.signup'))
         if request.form['role'] != '4':
             try:
                 new_pcl = Principal(Email=request.form['email'],
@@ -195,6 +230,8 @@ def signup():
                 db.session.add(new_pcl)
                 db.session.commit()
             except:
+                db.session.rollback()
+                db.session.flush()
                 flash(u'填写错误，请重新检查后再提交')
                 return redirect(url_for('.signup'))
             session['name'] = new_pcl.Email
@@ -220,15 +257,26 @@ def signup():
                 db.session.add(tester)
                 db.session.commit()
             except:
+                db.session.rollback()
+                db.session.flush()
                 flash(u'填写错误，请重新检查后再提交')
                 return redirect(url_for('.signup'))
             session['name'] = tester.Email
             session['priv'] = tester.Role
+            session['checked'] = tester.IsChecked
+            # black-list filtering
+            blacklists = Supervision.query.filter_by(TName=tester.Name).filter_by(SType="3").all()
+            isBlacked = False
+            for black in blacklists:
+                if black.EndTime > datetime.now():
+                    isBlacked = True
+                    break
+            session['black'] = isBlacked
             return redirect(url_for(".signup2"))
     else:
         return render_template('signup.html', name=session.get('name'))
 
-ALLOWED_EXTENSIONS = set(['pdf', 'png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS = set(['gif', 'png', 'jpg', 'jpeg'])
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.',1)[1] in ALLOWED_EXTENSIONS
 
@@ -248,21 +296,32 @@ def signup2():
             if request.form['estbtime']:
                 temps = request.form['estbtime'].split('-')
                 tester.EstbTime = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+            else:
+                tester.EstbTime = datetime(2099,1,1)
             if request.form['cmastart'] and request.form['cmaend']:
                 temps = request.form['cmastart'].split('-')
                 tester.CMAStart = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
                 temps = request.form['cmaend'].split('-')
                 tester.CMAEnd = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+            else:
+                tester.CMAStart = datetime(2099,1,1)
+                tester.CMAEnd = datetime(2099,1,1)
             if request.form['cnasstart'] and request.form['cnasend']:
                 temps = request.form['cnasstart'].split('-')
                 tester.CNASStart = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
                 temps = request.form['cnasend'].split('-')
                 tester.CNASEnd = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+            else:
+                tester.CNASStart = datetime(2099,1,1)
+                tester.CNASEnd = datetime(2099,1,1)
             if request.form['certstart'] and request.form['certend']:
                 temps = request.form['certstart'].split('-')
-                tester.CMAStart = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+                tester.CertStart = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
                 temps = request.form['certend'].split('-')
-                tester.CMAEnd = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+                tester.CertEnd = datetime(int(temps[0]), int(temps[1]), int(temps[2]))
+            else:
+                tester.CertStart = datetime(2099,1,1)
+                tester.CertEnd = datetime(2099,1,1)
             cmafile = request.files['cmafile']
             tempdir = "app/static/"+datetime.now().strftime("%Y%m%d%H%M%S")
             os.makedirs(os.path.abspath(tempdir))
@@ -285,6 +344,8 @@ def signup2():
             db.session.commit()
             login_user(tester)
         except:
+            db.session.rollback()
+            db.session.flush()
             flash(u'填写错误，请重新检查后再提交')
             return redirect(url_for('.signup2'))
         return redirect(url_for(".login"))
@@ -376,8 +437,11 @@ def supervise():
                 db.session.add(superv)
                 db.session.commit()
             except:
+                db.session.rollback()
+                db.session.flush()
                 flash(u'填写错误，请重新检查后再提交')
                 return redirect(url_for('.supervise'))
+            flash(u'提示：提交成功')
             return redirect(url_for(".supervise"))
         else:
             testers = Tester.query.filter_by(IsChecked=True).all()

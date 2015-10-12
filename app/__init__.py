@@ -8,6 +8,7 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.mail import Mail
 from flask.ext.login import LoginManager
 from config import config
+import datetime
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -26,7 +27,9 @@ def create_app(config_name):
     mail.init_app(app)
     login_manager.init_app(app)
 
+    # security setting
     app.secret_key="youdon'tknwhatIT1s"
+    app.permanent_session_lifetime = datetime.timedelta(minutes=30)
 
     # register blueprint
     from .main import main as main_blueprint

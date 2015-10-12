@@ -3,7 +3,7 @@
 {% block title %}审核{% endblock %}
 
 {% block navbar %}
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top" xmlns="http://www.w3.org/1999/html">
         <div class="container">
             <div class="navbar-header">
                 <a class="navbar-brand" href="/">第三方测试服务平台</a>
@@ -52,6 +52,11 @@
     <br/><br/><br/><br/>
     <h2 class="text-center">审核</h2>
     <form class="form-horizontal" method="post">
+        {% if testers|length == 0 %}
+        <div class="form-group">
+            <label class="col-sm-7 control-label">没有待审核的测试机构</label>
+        </div>
+        {% else %}
         <div class="form-group">
             <label for="tname" class="col-sm-4 control-label">请选择待审核的测试机构</label>
             <div class="col-sm-4">
@@ -67,5 +72,6 @@
                 <button type="submit" class="btn btn-md btn-primary btn-block">提交</button>
             </div>
         </div>
+        {% endif %}
     </form>
 {% endblock %}
