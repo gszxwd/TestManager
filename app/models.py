@@ -16,6 +16,8 @@ class Principal(UserMixin, db.Model):
     Contacts = db.Column(db.Unicode(16), nullable=False)
     Telephone = db.Column(db.String(16), nullable=False)
     RegTime = db.Column(db.DateTime, nullable=False)
+    LogCount = db.Column(db.Integer)    # for login limitation
+    LogTime = db.Column(db.DateTime)
 
     def __repr__(self):
         return '%r' % self.Name
@@ -32,6 +34,8 @@ class Tester(UserMixin, db.Model):
     Contacts = db.Column(db.Unicode(16), nullable=False)
     Telephone = db.Column(db.String(16), nullable=False)
     RegTime = db.Column(db.DateTime, nullable=False)
+    LogCount = db.Column(db.Integer)    # for login limitation
+    LogTime = db.Column(db.DateTime)
     # new for Tester
     HasCMA = db.Column(db.Boolean, nullable=False)
     CMAStart = db.Column(db.DateTime)

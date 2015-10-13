@@ -18,6 +18,10 @@ def login():
             if prcp is None:
                 prcp = Tester.query.filter_by(Email=request.form["inputEmail"]).first()
             if prcp is not None and prcp.Password == request.form["inputPassword"]:
+                # login limitation
+                if (datetime.now()-prcp.LogTime).seconds < 30*60:
+                    flash(u'连续错误登录3次，请等30分钟后再试')
+                    return redirect(url_for('.login'))
                 session['name'] = prcp.Email
                 session['priv'] = prcp.Role
                 if session['priv'] == '4':
@@ -33,10 +37,23 @@ def login():
                 login_user(prcp)
                 #return redirect(url_for('.login'))
             else:
-                flash(u'无效的用户名或密码')
+                # login limitation
+                if (datetime.now()-prcp.LogTime).seconds < 30*60:
+                    flash(u'连续错误登录3次，请等30分钟后再试')
+                    return redirect(url_for('.login'))
+                if prcp.LogCount == 3:
+                    flash(u'连续错误登录3次，请等30分钟后再试')
+                    prcp.LogTime = datetime.now()
+                    prcp.LogCount = 0
+                else:
+                    prcp.LogCount = prcp.LogCount + 1
+                    flash(u'无效的用户名或密码')
+                db.session.commit()
                 return redirect(url_for('.login'))
         except:
             flash(u'登录错误，请重试')
+            db.session.rollback()
+            db.session.flush()
             return redirect(url_for('.login'))
         return redirect(url_for('.login'))
     else:
@@ -225,7 +242,9 @@ def signup():
                                     Address=request.form['address'],
                                     Contacts=request.form['contacts'],
                                     Telephone=request.form['telephone'],
-                                    RegTime=datetime.now())
+                                    RegTime=datetime.now(),
+                                    LogCount=0,
+                                    LogTime=datetime(2000,1,1))
                 db.create_all()
                 db.session.add(new_pcl)
                 db.session.commit()
@@ -252,7 +271,9 @@ def signup():
                                 HasCert=False,
                                 IsChecked=False,
                                 EstbTime=datetime(2099,1,1),
-                                RegTime=datetime.now())
+                                RegTime=datetime.now(),
+                                LogCount=0,
+                                LogTime=datetime(2000,1,1))
                 db.create_all()
                 db.session.add(tester)
                 db.session.commit()
