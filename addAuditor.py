@@ -7,8 +7,8 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from datetime import datetime
 from app.models import Principal
 
-email = u"auditor@163.com"
-password = u"auditor"
+email = u"auditor1@163.com"
+password = u"auditor1"
 name = u"交通运输部科技司"
 address = u"交通运输部"
 contacts = u"小红"
@@ -29,7 +29,9 @@ prcp = Principal(Email=email,
                  Address=address,
                  Contacts=contacts,
                  Telephone=telephone,
-                 RegTime=regtime)
+                 RegTime=regtime,
+                 LogCount=0,
+                 LogTime=datetime(2000,1,1))
 db.session.add(prcp)
 db.session.commit()
 print u"管理员"+contacts+u"添加成功！"

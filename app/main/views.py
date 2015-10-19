@@ -346,17 +346,26 @@ def signup2():
             cmafile = request.files['cmafile']
             tempdir = "app/static/"+datetime.now().strftime("%Y%m%d%H%M%S")
             os.makedirs(os.path.abspath(tempdir))
-            if cmafile and allowed_file(cmafile.filename):
+            if cmafile:
+                if not allowed_file(cmafile.filename):
+                    flash(u"不支持的图片格式")
+                    return redirect(url_for('.signup2'))
                 tester.CMAPath = os.path.abspath(os.path.join(tempdir, cmafile.filename))
                 cmafile.save(tester.CMAPath)
                 tester.HasCMA = True
             cnasfile = request.files['cnasfile']
-            if cnasfile and allowed_file(cnasfile.filename):
+            if cnasfile:
+                if not allowed_file(cnasfile.filename):
+                    flash(u"不支持的图片格式")
+                    return redirect(url_for('.signup2'))
                 tester.CNASPath = os.path.abspath(os.path.join(tempdir, cnasfile.filename))
                 cnasfile.save(tester.CNASPath)
                 tester.HasCNAS = True
             certfile = request.files['certfile']
-            if certfile and allowed_file(certfile.filename):
+            if certfile:
+                if not allowed_file(certfile.filename):
+                    flash(u"不支持的图片格式")
+                    return redirect(url_for('.signup2'))
                 tester.CertPath = os.path.abspath(os.path.join(tempdir, certfile.filename))
                 certfile.save(tester.CertPath)
                 tester.HasCert = True
@@ -416,21 +425,21 @@ def audit2():
                 pos = tester.CMAPath.find('static')
                 dirstr = tester.CMAPath[pos:]
                 dirstr = '/'.join(dirstr.split('\\'))
-                temp.append(dirstr)                                 #6
+                temp.append(dirstr.replace(" ", "%20"))                                 #6
                 temp.append(tester.CMAStart.strftime("%Y-%m-%d"))   #7
                 temp.append(tester.CMAEnd.strftime("%Y-%m-%d"))     #8
             if tester.HasCNAS == True:
                 pos = tester.CNASPath.find('static')
                 dirstr = tester.CNASPath[pos:]
                 dirstr = '/'.join(dirstr.split('\\'))
-                temp.append(dirstr)
+                temp.append(dirstr.replace(" ", "%20"))
                 temp.append(tester.CNASStart.strftime("%Y-%m-%d"))
                 temp.append(tester.CNASEnd.strftime("%Y-%m-%d"))
             if tester.HasCert == True:
                 pos = tester.CertPath.find('static')
                 dirstr = tester.CertPath[pos:]
                 dirstr = '/'.join(dirstr.split('\\'))
-                temp.append(dirstr)
+                temp.append(dirstr.replace(" ", "%20"))
                 temp.append(tester.CertStart.strftime("%Y-%m-%d"))
                 temp.append(tester.CertEnd.strftime("%Y-%m-%d"))
             session['tester'] = temp
